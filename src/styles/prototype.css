@@ -176,6 +176,7 @@
 
 .proto-hero,
 .proto-section,
+.proto-design-frame,
 .proto-post-card,
 .proto-metric-card,
 .proto-empty-state,
@@ -277,6 +278,34 @@
 
 .proto-section-content--grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.proto-design-frame {
+  position: relative;
+  min-height: 120px;
+  padding: var(--space-5, 20px);
+}
+
+.proto-design-frame::before {
+  content: attr(data-layer-name);
+  position: absolute;
+  top: -10px;
+  left: 14px;
+  padding: 2px 8px;
+  border: 1px solid var(--color-border, #e5e5e5);
+  border-radius: var(--radius-pill, 9999px);
+  background: var(--color-bg, #ffffff);
+  color: var(--color-text-subtle, #999999);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.proto-design-frame-slot {
+  width: 100%;
+}
+
+.proto-text-layer {
+  margin: 0;
 }
 
 .proto-two-col {

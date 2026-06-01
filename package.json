@@ -24,7 +24,9 @@
   "dependencies": {
     "@puckeditor/core": "^0.21.2",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "react-moveable": "^0.56.0",
+    "selecto": "^1.26.3"
   },
   "devDependencies": {
     "@types/react": "^19.2.15",

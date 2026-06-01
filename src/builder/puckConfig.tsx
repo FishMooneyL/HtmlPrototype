@@ -1,10 +1,29 @@
 import type { Config, Viewports } from "@puckeditor/core";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { feedPostMockData } from "../data/mock/feedPostMockData";
 import type { MetricMockItem } from "../data/mock/metricMockData";
 
 type AccentColor = "neutral" | "blue" | "green" | "purple";
 type PrototypeMode = "visual" | "wireframe";
+type DesignSurfaceStyle = {
+  backgroundColor?: string;
+  textColor?: string;
+  borderColor?: string;
+  widthMode?: "auto" | "full" | "fixed" | "hug";
+  widthValue?: number;
+  maxWidth?: number;
+  padding?: number;
+  marginTop?: number;
+  borderRadius?: number;
+  layoutMode?: "block" | "flex" | "grid";
+  flexDirection?: "row" | "column";
+  justifyContent?: "flex-start" | "center" | "space-between";
+  alignItems?: "stretch" | "flex-start" | "center";
+  gap?: number;
+  fontSize?: number;
+  fontWeight?: "400" | "500" | "600" | "700" | "800";
+  textAlign?: "left" | "center" | "right";
+};
 
 const accentOptions = [
   { label: "黑白灰", value: "neutral" },
@@ -18,15 +37,243 @@ const prototypeModeOptions = [
   { label: "线框原型", value: "wireframe" },
 ];
 
+const widthModeOptions = [
+  { label: "自动", value: "auto" },
+  { label: "撑满", value: "full" },
+  { label: "固定宽度", value: "fixed" },
+  { label: "包裹内容", value: "hug" },
+];
+
+const layoutModeOptions = [
+  { label: "普通文档流", value: "block" },
+  { label: "Flex", value: "flex" },
+  { label: "Grid", value: "grid" },
+];
+
+const flexDirectionOptions = [
+  { label: "横向", value: "row" },
+  { label: "纵向", value: "column" },
+];
+
+const justifyOptions = [
+  { label: "起点", value: "flex-start" },
+  { label: "居中", value: "center" },
+  { label: "两端", value: "space-between" },
+];
+
+const alignOptions = [
+  { label: "拉伸", value: "stretch" },
+  { label: "起点", value: "flex-start" },
+  { label: "居中", value: "center" },
+];
+
+const textAlignOptions = [
+  { label: "左对齐", value: "left" },
+  { label: "居中", value: "center" },
+  { label: "右对齐", value: "right" },
+];
+
+const fontWeightOptions = [
+  { label: "Regular", value: "400" },
+  { label: "Medium", value: "500" },
+  { label: "SemiBold", value: "600" },
+  { label: "Bold", value: "700" },
+  { label: "ExtraBold", value: "800" },
+];
+
+const designSurfaceFields = {
+  backgroundColor: {
+    type: "text",
+    label: "背景色",
+    placeholder: "#ffffff / transparent",
+  },
+  textColor: {
+    type: "text",
+    label: "字体颜色",
+    placeholder: "#111111",
+  },
+  borderColor: {
+    type: "text",
+    label: "边框颜色",
+    placeholder: "#e5e5e5",
+  },
+  widthMode: {
+    type: "select",
+    label: "宽度模式",
+    options: widthModeOptions,
+  },
+  widthValue: {
+    type: "number",
+    label: "固定宽度 px",
+    min: 120,
+    max: 1440,
+    step: 10,
+  },
+  maxWidth: {
+    type: "number",
+    label: "最大宽度 px",
+    min: 120,
+    max: 1440,
+    step: 10,
+  },
+  padding: {
+    type: "number",
+    label: "内边距 px",
+    min: 0,
+    max: 120,
+    step: 2,
+  },
+  marginTop: {
+    type: "number",
+    label: "上外距 px",
+    min: 0,
+    max: 120,
+    step: 2,
+  },
+  borderRadius: {
+    type: "number",
+    label: "圆角 px",
+    min: 0,
+    max: 80,
+    step: 2,
+  },
+  layoutMode: {
+    type: "select",
+    label: "布局模式",
+    options: layoutModeOptions,
+  },
+  flexDirection: {
+    type: "select",
+    label: "Flex 方向",
+    options: flexDirectionOptions,
+  },
+  justifyContent: {
+    type: "select",
+    label: "主轴对齐",
+    options: justifyOptions,
+  },
+  alignItems: {
+    type: "select",
+    label: "交叉轴对齐",
+    options: alignOptions,
+  },
+  gap: {
+    type: "number",
+    label: "间距 px",
+    min: 0,
+    max: 80,
+    step: 2,
+  },
+  fontSize: {
+    type: "number",
+    label: "字号 px",
+    min: 10,
+    max: 72,
+    step: 1,
+  },
+  fontWeight: {
+    type: "select",
+    label: "字重",
+    options: fontWeightOptions,
+  },
+  textAlign: {
+    type: "select",
+    label: "文字对齐",
+    options: textAlignOptions,
+  },
+} as const;
+
+const designSurfaceDefaults: DesignSurfaceStyle = {
+  backgroundColor: "",
+  textColor: "",
+  borderColor: "",
+  widthMode: "auto",
+  widthValue: 640,
+  maxWidth: 0,
+  padding: 0,
+  marginTop: 0,
+  borderRadius: 0,
+  layoutMode: "block",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  alignItems: "stretch",
+  gap: 16,
+  fontSize: 0,
+  fontWeight: "400",
+  textAlign: "left",
+};
+
 const getAccentClass = (accentColor?: AccentColor) =>
   `proto-accent-${accentColor ?? "neutral"}`;
 
 const getModeClass = (prototypeMode?: PrototypeMode) =>
   prototypeMode === "wireframe" ? "is-wireframe" : "is-visual";
 
+const getDesignSurfaceStyle = ({
+  backgroundColor,
+  textColor,
+  borderColor,
+  widthMode,
+  widthValue,
+  maxWidth,
+  padding,
+  marginTop,
+  borderRadius,
+  layoutMode,
+  flexDirection,
+  justifyContent,
+  alignItems,
+  gap,
+  fontSize,
+  fontWeight,
+  textAlign,
+}: DesignSurfaceStyle): CSSProperties => {
+  const style: CSSProperties = {};
+
+  if (backgroundColor) style.backgroundColor = backgroundColor;
+  if (textColor) style.color = textColor;
+  if (borderColor) style.borderColor = borderColor;
+  if (padding && padding > 0) style.padding = padding;
+  if (marginTop && marginTop > 0) style.marginTop = marginTop;
+  if (borderRadius && borderRadius > 0) style.borderRadius = borderRadius;
+  if (maxWidth && maxWidth > 0) style.maxWidth = maxWidth;
+  if (fontSize && fontSize > 0) style.fontSize = fontSize;
+  if (fontWeight && fontWeight !== "400") style.fontWeight = fontWeight;
+  if (textAlign && textAlign !== "left") style.textAlign = textAlign;
+
+  if (widthMode === "full") {
+    style.width = "100%";
+  }
+
+  if (widthMode === "fixed" && widthValue && widthValue > 0) {
+    style.width = widthValue;
+  }
+
+  if (widthMode === "hug") {
+    style.width = "fit-content";
+  }
+
+  if (layoutMode === "flex") {
+    style.display = "flex";
+    style.flexDirection = flexDirection ?? "column";
+    style.justifyContent = justifyContent ?? "flex-start";
+    style.alignItems = alignItems ?? "stretch";
+    style.gap = gap ?? 16;
+  }
+
+  if (layoutMode === "grid") {
+    style.display = "grid";
+    style.gap = gap ?? 16;
+  }
+
+  return style;
+};
+
 const slotAllowList = [
   "HeroBlock",
   "SectionBlock",
+  "DesignFrame",
+  "TextLayer",
   "TwoColumnLayout",
   "FeedPost",
   "MetricGrid",
@@ -61,6 +308,11 @@ export const puckConfig = {
     content: {
       title: "内容组件",
       components: ["HeroBlock", "FeedPost", "MetricGrid", "ImagePlaceholder"],
+      defaultExpanded: true,
+    },
+    figmaLike: {
+      title: "类 Figma 容器",
+      components: ["DesignFrame", "TextLayer"],
       defaultExpanded: true,
     },
     feedback: {
@@ -241,6 +493,85 @@ export const puckConfig = {
           })}
         </section>
       ),
+    },
+    DesignFrame: {
+      label: "Frame 容器",
+      fields: {
+        name: {
+          type: "text",
+          label: "图层名称",
+        },
+        ...designSurfaceFields,
+        content: {
+          type: "slot",
+          label: "Frame 内容",
+          allow: slotAllowList,
+        },
+      },
+      defaultProps: {
+        name: "Frame",
+        ...designSurfaceDefaults,
+        backgroundColor: "#ffffff",
+        borderColor: "#e5e5e5",
+        padding: 20,
+        borderRadius: 18,
+        layoutMode: "flex",
+        flexDirection: "column",
+        gap: 16,
+        content: [],
+      },
+      render: ({ name, content: Content, ...styleProps }) => (
+        <section
+          className="proto-design-frame"
+          data-layer-name={name}
+          style={getDesignSurfaceStyle(styleProps as DesignSurfaceStyle)}
+        >
+          {Content({
+            className: "proto-slot proto-design-frame-slot",
+            minEmptyHeight: 140,
+          })}
+        </section>
+      ),
+    },
+    TextLayer: {
+      label: "文字图层",
+      fields: {
+        text: {
+          type: "textarea",
+          label: "文本",
+        },
+        tagName: {
+          type: "select",
+          label: "语义标签",
+          options: [
+            { label: "段落 p", value: "p" },
+            { label: "标题 h2", value: "h2" },
+            { label: "标题 h3", value: "h3" },
+            { label: "小字 span", value: "span" },
+          ],
+        },
+        ...designSurfaceFields,
+      },
+      defaultProps: {
+        text: "可编辑文字图层",
+        tagName: "p",
+        ...designSurfaceDefaults,
+        textColor: "#111111",
+        fontSize: 16,
+        fontWeight: "500",
+      },
+      render: ({ text, tagName, ...styleProps }) => {
+        const Tag = tagName as "p" | "h2" | "h3" | "span";
+
+        return (
+          <Tag
+            className="proto-text-layer"
+            style={getDesignSurfaceStyle(styleProps as DesignSurfaceStyle)}
+          >
+            {text}
+          </Tag>
+        );
+      },
     },
     TwoColumnLayout: {
       label: "双栏容器",

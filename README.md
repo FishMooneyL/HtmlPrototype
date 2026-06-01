@@ -59,8 +59,11 @@ npm run preview
 
 - Puck 拖拽编辑器。
 - PC / Mobile viewport 预览。
+- 已引入 `react-moveable`、`selecto`，后续可继续做画布选中、拖动、缩放、旋转等类 Figma 交互。
 - 页面壳、内容区、双栏容器、Hero、Post 卡片、指标卡组、空状态、表单、图片占位等组件。
+- 类 Figma 组件：`DesignFrame`、`TextLayer`。
 - 组件属性面板，可配置颜色、是否线框原型、文案、布局、mock 数据源等。
+- `DesignFrame` / `TextLayer` 支持配置背景色、字体颜色、边框颜色、宽度模式、固定宽度、最大宽度、内外边距、圆角、Flex / Grid、主轴对齐、交叉轴对齐、gap、字号、字重、文字对齐。
 - Slot 嵌套容器，可把组件拖入页面壳、内容区、双栏左右栏。
 - 导出 HTML、`prototype.css`、Next.js `page.tsx` 示例代码。
 
@@ -150,6 +153,7 @@ src/
 
 1. 从 `项目原型/` 批量抽取页面清单、PRD 注释和更多 mock 数据。
 2. 扩展 C 端 Web / 移动端 / 管理后台组件库。
-3. 将导出器从示例级 HTML 生成升级为完整 HTML / Next.js 文件包。
-4. 增加页面管理、图层重命名、组件复制、导入导出 JSON。
-5. 评估是否补充 Flutter 导出器；建议放在 HTML / Next.js 稳定之后。
+3. 基于 `react-moveable` + `selecto` 增加画布直接选中、拖动、缩放和 resize handle。
+4. 将导出器从示例级 HTML 生成升级为完整 HTML / Next.js 文件包。
+5. 增加页面管理、图层重命名、组件复制、导入导出 JSON。
+6. 评估是否补充 Flutter 导出器；建议放在 HTML / Next.js 稳定之后。

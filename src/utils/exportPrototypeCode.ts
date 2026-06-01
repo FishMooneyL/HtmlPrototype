@@ -16,6 +16,25 @@ type RawMetric = {
 };
 
 const slotKeys = ["content", "left", "right"];
+const stylePropKeys = new Set([
+  "backgroundColor",
+  "textColor",
+  "borderColor",
+  "widthMode",
+  "widthValue",
+  "maxWidth",
+  "padding",
+  "marginTop",
+  "borderRadius",
+  "layoutMode",
+  "flexDirection",
+  "justifyContent",
+  "alignItems",
+  "gap",
+  "fontSize",
+  "fontWeight",
+  "textAlign",
+]);
 
 const escapeHtml = (value: unknown) =>
   String(value ?? "")
@@ -33,6 +52,92 @@ const getAccentClass = (value: unknown) => `proto-accent-${value || "neutral"}`;
 
 const getModeClass = (value: unknown) =>
   value === "wireframe" ? "is-wireframe" : "is-visual";
+
+const toCssValue = (propertyName: string, value: unknown) => {
+  if (typeof value === "number") {
+    return `${value}px`;
+  }
+
+  if (propertyName === "fontWeight") {
+    return String(value);
+  }
+
+  return String(value);
+};
+
+const getDesignSurfaceStyle = (props: Record<string, unknown>) => {
+  const styleEntries: string[] = [];
+  const widthMode = props.widthMode;
+
+  if (props.backgroundColor) {
+    styleEntries.push(`background-color: ${props.backgroundColor}`);
+  }
+
+  if (props.textColor) {
+    styleEntries.push(`color: ${props.textColor}`);
+  }
+
+  if (props.borderColor) {
+    styleEntries.push(`border-color: ${props.borderColor}`);
+  }
+
+  if (widthMode === "full") {
+    styleEntries.push("width: 100%");
+  }
+
+  if (widthMode === "fixed" && props.widthValue) {
+    styleEntries.push(`width: ${toCssValue("widthValue", props.widthValue)}`);
+  }
+
+  if (widthMode === "hug") {
+    styleEntries.push("width: fit-content");
+  }
+
+  if (props.maxWidth && Number(props.maxWidth) > 0) {
+    styleEntries.push(`max-width: ${toCssValue("maxWidth", props.maxWidth)}`);
+  }
+
+  if (props.padding && Number(props.padding) > 0) {
+    styleEntries.push(`padding: ${toCssValue("padding", props.padding)}`);
+  }
+
+  if (props.marginTop && Number(props.marginTop) > 0) {
+    styleEntries.push(`margin-top: ${toCssValue("marginTop", props.marginTop)}`);
+  }
+
+  if (props.borderRadius && Number(props.borderRadius) > 0) {
+    styleEntries.push(
+      `border-radius: ${toCssValue("borderRadius", props.borderRadius)}`,
+    );
+  }
+
+  if (props.fontSize && Number(props.fontSize) > 0) {
+    styleEntries.push(`font-size: ${toCssValue("fontSize", props.fontSize)}`);
+  }
+
+  if (props.fontWeight && props.fontWeight !== "400") {
+    styleEntries.push(`font-weight: ${props.fontWeight}`);
+  }
+
+  if (props.textAlign && props.textAlign !== "left") {
+    styleEntries.push(`text-align: ${props.textAlign}`);
+  }
+
+  if (props.layoutMode === "flex") {
+    styleEntries.push("display: flex");
+    styleEntries.push(`flex-direction: ${props.flexDirection || "column"}`);
+    styleEntries.push(`justify-content: ${props.justifyContent || "flex-start"}`);
+    styleEntries.push(`align-items: ${props.alignItems || "stretch"}`);
+    styleEntries.push(`gap: ${toCssValue("gap", props.gap || 16)}`);
+  }
+
+  if (props.layoutMode === "grid") {
+    styleEntries.push("display: grid");
+    styleEntries.push(`gap: ${toCssValue("gap", props.gap || 16)}`);
+  }
+
+  return styleEntries.length ? ` style="${escapeHtml(styleEntries.join("; "))}"` : "";
+};
 
 const renderNodes = (nodes: RawNode[]) => nodes.map(renderNode).join("\n");
 
@@ -87,6 +192,25 @@ ${getSlot(node, "content")}
 ${getSlot(node, "content")}
   </div>
 </section>`;
+
+    case "DesignFrame":
+      return `<section class="proto-design-frame" data-layer-name="${escapeHtml(
+        props.name,
+      )}"${getDesignSurfaceStyle(props)}>
+  <div class="proto-slot proto-design-frame-slot">
+${getSlot(node, "content")}
+  </div>
+</section>`;
+
+    case "TextLayer": {
+      const tagName = ["p", "h2", "h3", "span"].includes(String(props.tagName))
+        ? String(props.tagName)
+        : "p";
+
+      return `<${tagName} class="proto-text-layer"${getDesignSurfaceStyle(props)}>${escapeHtml(
+        props.text,
+      )}</${tagName}>`;
+    }
 
     case "TwoColumnLayout":
       return `<div class="proto-two-col proto-two-col--${escapeHtml(
@@ -181,7 +305,10 @@ ${metricHtml}
       )}"><span>${escapeHtml(props.title)}</span></div>`;
 
     default: {
-      const childHtml = slotKeys.map((slotName) => getSlot(node, slotName)).join("\n");
+      const childHtml = slotKeys
+        .filter((slotName) => !stylePropKeys.has(slotName))
+        .map((slotName) => getSlot(node, slotName))
+        .join("\n");
       return `<div class="proto-unknown-node" data-node-type="${escapeHtml(
         node.type,
       )}">${childHtml}</div>`;
