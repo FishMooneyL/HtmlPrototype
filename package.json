@@ -1,0 +1,37 @@
+{
+  "name": "html-prototype-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "一个面向产品经理的可拖拉拽原型编辑器项目。目标是通过组件化、数据分离和统一样式规范，快速搭建高质量 HTML / React 原型页面，而不是继续维护巨型单文件原型。",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "typecheck": "tsc -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FishMooneyL/HtmlPrototype.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FishMooneyL/HtmlPrototype/issues"
+  },
+  "homepage": "https://github.com/FishMooneyL/HtmlPrototype#readme",
+  "dependencies": {
+    "@puckeditor/core": "^0.21.2",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "eslint": "^10.4.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16"
+  }
+}

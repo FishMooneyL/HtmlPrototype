@@ -4,13 +4,21 @@
 
 ## 当前状态
 
-当前仓库还未正式搭建 React 应用，已有内容主要是：
+当前仓库已经接入一版最小可运行的 React + TypeScript + Vite + Puck 原型编辑器：
 
 ```text
 .
 ├── Agent.md              # 项目协作与 AI 生成代码规范
 ├── AGENTS.md             # 自动化 Agent 入口说明
 ├── README.md             # 项目说明
+├── package.json          # 前端应用依赖和脚本
+├── index.html
+├── src/
+│   ├── app/              # 应用入口和编辑器/预览/导出页面
+│   ├── builder/          # Puck 组件清单、字段配置、viewport 配置
+│   ├── data/             # mock 数据和初始页面树
+│   ├── styles/           # token、基础样式、原型组件样式
+│   └── utils/            # HTML / CSS / Next.js 导出逻辑
 └── 项目原型/
     ├── C端web原型.html
     ├── C端移动端原型.html
@@ -18,6 +26,43 @@
 ```
 
 `项目原型/` 是历史产品原型参考，建议只用于拆解页面、组件、PRD 和 mock 数据，不建议继续在这些 HTML 文件里追加新功能。
+
+## 如何运行拖拽编辑器
+
+安装依赖：
+
+```bash
+npm install
+```
+
+启动开发服务：
+
+```bash
+npm run dev
+```
+
+访问：
+
+```text
+http://localhost:5173/
+```
+
+常用命令：
+
+```bash
+npm run typecheck
+npm run build
+npm run preview
+```
+
+当前 MVP 已包含：
+
+- Puck 拖拽编辑器。
+- PC / Mobile viewport 预览。
+- 页面壳、内容区、双栏容器、Hero、Post 卡片、指标卡组、空状态、表单、图片占位等组件。
+- 组件属性面板，可配置颜色、是否线框原型、文案、布局、mock 数据源等。
+- Slot 嵌套容器，可把组件拖入页面壳、内容区、双栏左右栏。
+- 导出 HTML、`prototype.css`、Next.js `page.tsx` 示例代码。
 
 ## 如何查看当前原型
 
@@ -53,10 +98,10 @@ http://localhost:5173/项目原型/管理后台原型%20.html
 
 ## 推荐后续技术方案
 
-推荐优先使用自研 React 原型编辑器方案：
+当前 MVP 采用 Puck 作为编辑器底座，后续继续沿着“受控组件库 + 结构化页面树 + 自研导出器”的方案推进：
 
 - React + TypeScript + Vite：项目基础框架。
-- dnd-kit：拖拽、排序、嵌套容器、画布交互。
+- Puck：拖拽、排序、嵌套容器、画布交互和属性面板。
 - CSS Modules 或集中 CSS：统一管理类名、设计令牌和组件样式。
 - TypeScript Schema：定义页面树、组件清单、属性面板和 mock 数据。
 
@@ -71,31 +116,25 @@ http://localhost:5173/项目原型/管理后台原型%20.html
 
 ## 建议的目标目录
 
-正式搭建应用后，建议整理为：
+当前已按以下方向落地，后续可继续扩展：
 
 ```text
 src/
   app/
-  components/
-    builder/
-    prototype/
-    ui/
+  builder/
   data/
     mock/
     pages/
-  schemas/
   styles/
   utils/
 ```
 
 关键职责：
 
-- `components/builder/`：拖拽编辑器本身，如画布、组件面板、图层树、属性面板。
-- `components/prototype/`：可被拖拽和导出的原型组件。
+- `builder/`：Puck 组件 manifest、字段配置、嵌套规则、viewport 配置。
 - `data/mock/`：领域 mock 数据，变量使用 camelCase。
-- `schemas/`：页面节点、组件 manifest、属性配置的类型定义。
 - `styles/`：设计令牌、基础样式、工具类和组件类名。
-- `utils/exportHtml.ts`：页面树到 HTML / React 骨架的导出逻辑。
+- `utils/exportPrototypeCode.ts`：页面树到 HTML / CSS / Next.js 骨架的导出逻辑。
 
 ## 代码规范重点
 
@@ -109,8 +148,8 @@ src/
 
 ## 建议下一步
 
-1. 用 Vite 初始化 React + TypeScript 应用。
-2. 把 `项目原型/` 的页面清单、PRD 注释和 mock 数据抽离成结构化 JSON / TS 文件。
-3. 建立第一批原型组件：页面壳、卡片、按钮、表格、表单、空态、弹窗。
-4. 接入 dnd-kit，实现组件面板拖到画布。
-5. 实现页面树保存、导入导出和代码生成。
+1. 从 `项目原型/` 批量抽取页面清单、PRD 注释和更多 mock 数据。
+2. 扩展 C 端 Web / 移动端 / 管理后台组件库。
+3. 将导出器从示例级 HTML 生成升级为完整 HTML / Next.js 文件包。
+4. 增加页面管理、图层重命名、组件复制、导入导出 JSON。
+5. 评估是否补充 Flutter 导出器；建议放在 HTML / Next.js 稳定之后。
